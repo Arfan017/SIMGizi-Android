@@ -12,7 +12,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide; // Import Glide
+import com.bumptech.glide.Glide;
 import com.example.simgizi.R;
 import com.example.simgizi.models.Distribusi;
 
@@ -22,7 +22,6 @@ public class RiwayatAdapter extends RecyclerView.Adapter<RiwayatAdapter.ViewHold
 
     private Context context;
     private List<Distribusi> riwayatList;
-    // Ganti dengan base URL folder uploads Anda
 
     public RiwayatAdapter(Context context, List<Distribusi> riwayatList) {
         this.context = context;
@@ -46,12 +45,11 @@ public class RiwayatAdapter extends RecyclerView.Adapter<RiwayatAdapter.ViewHold
 
         String foto = riwayat.getFoto();
         if (foto != null && !foto.isEmpty() && !foto.equalsIgnoreCase("null")) {
-            // Memuat gambar menggunakan Glide
             String imageUrl = base_url_image + riwayat.getFoto();
             Glide.with(context)
                     .load(imageUrl)
-                    .placeholder(R.drawable.ic_launcher_background) // Gambar sementara saat loading
-                    .error(R.drawable.ic_input_distribusi) // Gambar jika gagal load
+                    .placeholder(R.drawable.ic_launcher_background)
+                    .error(R.drawable.ic_input_distribusi)
                     .into(holder.imageFotoRiwayat);
         } else {
             holder.imageFotoRiwayat.setImageResource(R.drawable.ic_input_distribusi);

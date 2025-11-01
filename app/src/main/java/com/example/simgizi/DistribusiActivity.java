@@ -29,6 +29,8 @@ import com.example.simgizi.services.TrackingService;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -126,16 +128,16 @@ public class DistribusiActivity extends AppCompatActivity implements DistribusiA
         };
         requestQueue.add(stringRequest);
 
-        // --- TAMBAHKAN LOGIKA INI ---
         Intent serviceIntent = new Intent(this, TrackingService.class);
-        if (newStatus.equals("1")) { // Jika statusnya menjadi "Dikirim"
-            // Mulai service dan kirim ID distribusinya
+        DatabaseReference trackingRef = FirebaseDatabase.getInstance("https://simgizi-tracking-default-rtdb.asia-southeast1.firebasedatabase.app")
+                .getReference("lokasi_terkini");
+        if (newStatus.equals("1")) {
             serviceIntent.putExtra("id_distribusi", idDistribusi);
             startService(serviceIntent);
             Toast.makeText(this, "Pelacakan dimulai...", Toast.LENGTH_SHORT).show();
-        } else { // Jika statusnya menjadi "Selesai" (2) atau "Batal" (0)
-            // Hentikan service
+        } else {
             stopService(serviceIntent);
+            trackingRef.child(idDistribusi).removeValue();
             Toast.makeText(this, "Pelacakan dihentikan.", Toast.LENGTH_SHORT).show();
         }
     }
@@ -187,7 +189,6 @@ public class DistribusiActivity extends AppCompatActivity implements DistribusiA
         requestQueue.add(jsonArrayRequest);
     }
 
-    // 2. Method untuk memeriksa izin lokasi
     private void checkLocationPermission() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 

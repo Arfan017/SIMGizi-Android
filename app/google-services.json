@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "837440855057",
+    "project_id": "simgizi-tracking",
+    "storage_bucket": "simgizi-tracking.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:837440855057:android:db0aff560e805ebaa725b0",
+        "android_client_info": {
+          "package_name": "com.example.simgizi"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyATczRjKW8C63imjiwvEATZx1xAwUCqOX0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

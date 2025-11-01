@@ -26,28 +26,25 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class TrackingService extends Service {
+public class TrackingServiceOld extends Service {
 
     private static final String TAG = "TrackingService";
     private FusedLocationProviderClient fusedLocationClient;
     private LocationCallback locationCallback;
+    private RequestQueue requestQueue;
 
-    private DatabaseReference dbRef;
     private String idDistribusi;
 
     @Override
     public void onCreate() {
         super.onCreate();
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        requestQueue = Volley.newRequestQueue(this);
 
-        dbRef = FirebaseDatabase.getInstance("https://simgizi-tracking-default-rtdb.asia-southeast1.firebasedatabase.app")
-                .getReference("lokasi_terkini");
         locationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(LocationResult locationResult) {
@@ -82,7 +79,9 @@ public class TrackingService extends Service {
                 .setSmallIcon(R.drawable.ic_data_distribusi)
                 .build();
 
+
         startForeground(1, notification);
+
 
         startLocationUpdates();
 
@@ -103,23 +102,27 @@ public class TrackingService extends Service {
     }
 
     private void sendLocationUpdate(Location location) {
-        if (idDistribusi == null || idDistribusi.isEmpty()) return;
+        String koordinat = location.getLatitude() + "," + location.getLongitude();
+        Log.d(TAG, "Mengirim lokasi: " + koordinat + " untuk ID: " + idDistribusi);
 
-        Map<String, Object> locationData = new HashMap<>();
-        locationData.put("lat", location.getLatitude());
-        locationData.put("lng", location.getLongitude());
-
-        dbRef.child(idDistribusi).setValue(locationData)
-                .addOnSuccessListener(aVoid ->
-                        Log.d(TAG, "Lokasi " + idDistribusi + " berhasil dikirim ke Firebase."))
-                .addOnFailureListener(e ->
-                        Log.e(TAG, "Gagal kirim lokasi ke Firebase: ", e));
-
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, api_update_lokasi,
+                response -> Log.d(TAG, "Respon server: " + response),
+                error -> Log.e(TAG, "Error Volley: " + error.toString())) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("id_distribusi", idDistribusi);
+                params.put("lokasi", koordinat);
+                return params;
+            }
+        };
+        requestQueue.add(stringRequest);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+
         fusedLocationClient.removeLocationUpdates(locationCallback);
     }
 

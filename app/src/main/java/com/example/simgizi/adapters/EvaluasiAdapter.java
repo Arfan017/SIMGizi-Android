@@ -7,7 +7,7 @@ import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView; // Import ImageView jika belum ada
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -20,8 +20,6 @@ import com.example.simgizi.models.Evaluasi;
 
 import java.util.List;
 
-// Import Glide jika ingin memuat ikon dinamis
-// import com.bumptech.glide.Glide;
 
 public class EvaluasiAdapter extends RecyclerView.Adapter<EvaluasiAdapter.ViewHolder> {
     private Context context;
@@ -43,48 +41,44 @@ public class EvaluasiAdapter extends RecyclerView.Adapter<EvaluasiAdapter.ViewHo
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Evaluasi evaluasi = evaluasiList.get(position);
 
-        // --- Mengisi TextView Nilai ---
         holder.textEvalNamaSekolah.setText(evaluasi.getNama_sekolah());
-        holder.textEvalTanggalDistribusi.setText(evaluasi.getTanggal()); // Mengisi nilai tanggal
-        holder.textEvalCatatan.setText(evaluasi.getCatatan()); // Mengisi nilai catatan
+        holder.textEvalTanggalDistribusi.setText(evaluasi.getTanggal());
+        holder.textEvalCatatan.setText(evaluasi.getCatatan());
 
-        // --- Logika Status Distribusi (Angka ke Teks) ---
         String statusNumerik = evaluasi.getStatus_distribusi();
         String statusTeks = "-";
-        int statusColor = Color.DKGRAY; // Warna default
+        int statusColor = Color.DKGRAY;
 
         switch (statusNumerik) {
             case "1":
                 statusTeks = "Baik";
-                statusColor = ContextCompat.getColor(context, android.R.color.holo_green_dark); // Hijau
+                statusColor = ContextCompat.getColor(context, android.R.color.holo_green_dark);
                 break;
             case "2":
                 statusTeks = "Kurang Baik";
-                statusColor = ContextCompat.getColor(context, android.R.color.holo_orange_dark); // Oranye
+                statusColor = ContextCompat.getColor(context, android.R.color.holo_orange_dark);
                 break;
             case "3":
                 statusTeks = "Tidak Baik";
-                statusColor = ContextCompat.getColor(context, android.R.color.holo_red_dark); // Merah
+                statusColor = ContextCompat.getColor(context, android.R.color.holo_red_dark);
                 break;
             default:
-                statusTeks = "N/A"; // Jika status tidak dikenali
+                statusTeks = "N/A";
                 break;
         }
         holder.textEvalStatus.setText(statusTeks);
-        holder.textEvalStatus.setTextColor(statusColor); // Ubah warna teksnya
+        holder.textEvalStatus.setTextColor(statusColor);
 
-        // --- Memuat Gambar menggunakan Glide ---
         String namaGambar = evaluasi.getGambar();
         if (namaGambar != null && !namaGambar.isEmpty() && !namaGambar.equalsIgnoreCase("null")) {
             String imageUrl = base_url_image + namaGambar;
             Glide.with(context)
                     .load(imageUrl)
-                    .placeholder(R.drawable.ic_input_porsi) // Gambar saat loading
-                    .error(R.drawable.ic_riwayat)         // Gambar jika error
-                    .into(holder.imageEvalIcon); // Target ImageView
+                    .placeholder(R.drawable.ic_input_porsi)
+                    .error(R.drawable.ic_riwayat)
+                    .into(holder.imageEvalIcon);
         } else {
-            // Jika tidak ada gambar, tampilkan ikon default
-            holder.imageEvalIcon.setImageResource(R.drawable.ic_evaluasi); // Ikon evaluasi default
+            holder.imageEvalIcon.setImageResource(R.drawable.ic_evaluasi);
         }
     }
 
@@ -93,7 +87,6 @@ public class EvaluasiAdapter extends RecyclerView.Adapter<EvaluasiAdapter.ViewHo
         return evaluasiList.size();
     }
 
-    // ViewHolder tetap sama seperti sebelumnya
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView imageEvalIcon;
         TextView textEvalNamaSekolah, textEvalTanggalDistribusi, textEvalCatatan, textEvalStatus;

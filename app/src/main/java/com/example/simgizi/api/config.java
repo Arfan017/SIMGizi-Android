@@ -2,10 +2,10 @@ package com.example.simgizi.api;
 
 public class config {
     public final static String API = "simgizi.online";
-    public final static String API_LOCAL = "192.168.1.11/SIMGizi";
+//    public final static String API_LOCAL = "192.168.1.11/SIMGizi";
 
     public static final String ipserver = "http://" + API + "/php/api/";
-    public static final String ipserverlocal = "http://" + API_LOCAL + "/php/api/";
+//    public static final String ipserverlocal = "http://" + API_LOCAL + "/php/api/";
     public static final String api_get_distribusi = ipserver + "api_get_distribusi.php";
     public static final String api_update_status_pengiriman = ipserver + "api_update_status_pengiriman.php";
     public static final String api_crud_distribusi = ipserver + "api_crud_distribusi.php";

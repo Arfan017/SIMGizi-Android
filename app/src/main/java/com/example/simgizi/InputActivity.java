@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -29,6 +30,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -58,12 +60,11 @@ import okhttp3.Response;
 
 public class InputActivity extends AppCompatActivity {
 
-    // UI Components
     private Spinner spinnerSekolah;
     private EditText editTextJumlah, editTextLokasi;
     private Button btnPilihTanggal, btnPilihJam, btnPilihFoto, btnAmbilLokasi, btnSimpan;
     private TextView textTanggal, textJam, textAlamatFoto, textInfoStok;
-    ;
+
     private ImageView imagePreview;
 
     private List<Sekolah> dataSekolahList = new ArrayList<>();
@@ -118,7 +119,6 @@ public class InputActivity extends AppCompatActivity {
                         if (response.getString("status").equals("success")) {
                             String sisaStok = String.valueOf(response.getInt("sisa_stok"));
                             textInfoStok.setText(sisaStok);
-                            // Set batas maksimal untuk EditText jumlah
                             editTextJumlah.setHint("Maks: " + sisaStok);
                         } else {
                             textInfoStok.setText("0 (Belum diinput)");
@@ -137,21 +137,18 @@ public class InputActivity extends AppCompatActivity {
         JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, api_get_sekolah, null,
                 response -> {
                     try {
-                        // Kosongkan list sebelum diisi data baru
                         dataSekolahList.clear();
                         for (int i = 0; i < response.length(); i++) {
                             JSONObject sekolahJson = response.getJSONObject(i);
 
-                            // Buat objek Sekolah dari JSON
                             Sekolah sekolah = new Sekolah(
                                     sekolahJson.getString("id_sekolah"),
                                     sekolahJson.getString("nama_sekolah"),
                                     sekolahJson.getString("lokasi_gps")
                             );
-                            dataSekolahList.add(sekolah); // Tambahkan objek ke list
+                            dataSekolahList.add(sekolah);
                         }
 
-                        // Gunakan List<Sekolah> langsung ke Adapter
                         ArrayAdapter<Sekolah> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, dataSekolahList);
                         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                         spinnerSekolah.setAdapter(adapter);
@@ -185,28 +182,22 @@ public class InputActivity extends AppCompatActivity {
         btnAmbilLokasi.setOnClickListener(v -> checkLocationPermissionAndGetLocation());
         btnSimpan.setOnClickListener(v -> simpanData());
 
-        // --- TAMBAHKAN LISTENER UNTUK SPINNER DI SINI ---
         spinnerSekolah.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                // Ambil objek Sekolah yang dipilih berdasarkan posisinya
                 Sekolah sekolahTerpilih = dataSekolahList.get(position);
 
-                // Ambil data GPS dari objek tersebut
                 String lokasiGps = sekolahTerpilih.getLokasi_gps();
 
-                // Set teks di EditText lokasi
                 if (lokasiGps != null && !lokasiGps.isEmpty() && !lokasiGps.equalsIgnoreCase("null")) {
                     editTextLokasi.setText(lokasiGps);
                 } else {
-                    // Kosongkan jika tidak ada data GPS
                     editTextLokasi.setText("");
                 }
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                // Biarkan kosong
             }
         });
 
@@ -229,11 +220,22 @@ public class InputActivity extends AppCompatActivity {
     }
 
     private void checkStoragePermissionAndPickImage() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, STORAGE_PERMISSION_REQUEST_CODE);
+
+
+        String permissionToRequest;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            permissionToRequest = Manifest.permission.READ_MEDIA_IMAGES;
         } else {
-            pickImage();
+            permissionToRequest = Manifest.permission.READ_EXTERNAL_STORAGE;
         }
+
+        if (ContextCompat.checkSelfPermission(this, permissionToRequest) == PackageManager.PERMISSION_GRANTED) {
+            pickImage();
+        } else {
+            ActivityCompat.requestPermissions(this, new String[]{permissionToRequest}, STORAGE_PERMISSION_REQUEST_CODE);
+        }
+
     }
 
     private void pickImage() {
@@ -265,12 +267,17 @@ public class InputActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+        if (requestCode == STORAGE_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                pickImage();
+            } else {
+                Toast.makeText(this, "Izin ditolak! Tidak bisa memilih foto.", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
             getLocation();
-        } else if (requestCode == STORAGE_PERMISSION_REQUEST_CODE && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            pickImage();
-        } else {
-            Toast.makeText(this, "Izin ditolak!", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -310,7 +317,6 @@ public class InputActivity extends AppCompatActivity {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                // Jika Gagal (masalah jaringan, dll)
                 runOnUiThread(() -> {
                     Toast.makeText(InputActivity.this, "Upload Gagal: " + e.getMessage(), Toast.LENGTH_LONG).show();
                     Log.e("UploadError", "onFailure: ", e);
@@ -319,14 +325,12 @@ public class InputActivity extends AppCompatActivity {
 
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                // Jika Berhasil mendapat respons dari server
                 final String responseBody = response.body().string();
                 runOnUiThread(() -> {
                     try {
                         JSONObject jsonObject = new JSONObject(responseBody);
                         if (jsonObject.getString("status").equals("success")) {
                             Toast.makeText(InputActivity.this, "Data berhasil disimpan!", Toast.LENGTH_LONG).show();
-                            finish(); // Kembali ke halaman utama
                         } else {
                             Toast.makeText(InputActivity.this, "Gagal: " + jsonObject.getString("message"), Toast.LENGTH_LONG).show();
                         }
@@ -337,7 +341,6 @@ public class InputActivity extends AppCompatActivity {
                 });
             }
         });
-        // --- AKHIR LOGIKA UPLOAD DENGAN OKHTTP ---
     }
 
     private String getPathFromUri(Uri contentUri) {

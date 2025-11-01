@@ -35,14 +35,12 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        // Sembunyikan ActionBar untuk halaman login
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
 
         sessionManager = new SessionManager(getApplicationContext());
 
-        // Cek jika pengguna sudah login, langsung arahkan ke Dashboard
         if (sessionManager.isLoggedIn()) {
             goToDashboard();
         }
@@ -84,7 +82,6 @@ public class LoginActivity extends AppCompatActivity {
                             String nama = data.getString("nama");
                             String role = data.getString("role");
 
-                            // Simpan sesi login
                             sessionManager.createLoginSession(userId, nama, role);
 
                             Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();

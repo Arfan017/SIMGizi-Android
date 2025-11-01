@@ -13,7 +13,6 @@ public class Distribusi implements Serializable {
     private String lokasi_gps;
     private String foto;
 
-    // Constructor
     public Distribusi(String id_distribusi, String tanggal, String waktu, String jumlah, String status_pengiriman, String nama_petugas, String sekolah_tujuan, String lokasi_gps, String foto) {
         this.id_distribusi = id_distribusi;
         this.tanggal = tanggal;
@@ -26,7 +25,6 @@ public class Distribusi implements Serializable {
         this.foto = foto;
     }
 
-    // Getter methods
     public String getLokasi_gps() {
         return lokasi_gps;
     }

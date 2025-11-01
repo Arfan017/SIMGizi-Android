@@ -34,22 +34,19 @@ import java.util.Map;
 
 public class InputPorsiActivity extends AppCompatActivity {
 
-    // UI Elements
     private TextView textTanggalPorsi;
     private Button btnPilihTanggalPorsi, btnSimpanPorsi;
     private Spinner spinnerKh, spinnerProtein1, spinnerProtein2, spinnerSayur, spinnerBuah;
     private EditText editTextTambahan, editTextJumlahPorsi;
 
-    // Data Holders for Spinners
     private List<BahanMakanan> listKh = new ArrayList<>();
     private List<BahanMakanan> listProtein = new ArrayList<>();
     private List<BahanMakanan> listSayur = new ArrayList<>();
     private List<BahanMakanan> listBuah = new ArrayList<>();
 
-    // Adapters for Spinners
     private ArrayAdapter<BahanMakanan> adapterKh, adapterProtein1, adapterProtein2, adapterSayur, adapterBuah;
 
-    private String selectedDate = ""; // Menyimpan tanggal terpilih
+    private String selectedDate = "";
     private RequestQueue requestQueue;
 
     @Override
@@ -61,9 +58,9 @@ public class InputPorsiActivity extends AppCompatActivity {
         requestQueue = Volley.newRequestQueue(this);
 
         bindViews();
-        setupAdapters(); // Siapkan adapter sebelum fetch data
+        setupAdapters();
         setupListeners();
-        fetchBahanMakananOptions(); // Ambil data untuk dropdown
+        fetchBahanMakananOptions();
     }
 
     private void bindViews() {
@@ -80,7 +77,6 @@ public class InputPorsiActivity extends AppCompatActivity {
     }
 
     private void setupAdapters() {
-        // Buat adapter dengan layout dropdown standar
         adapterKh = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, listKh);
         adapterKh.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerKh.setAdapter(adapterKh);
@@ -89,7 +85,7 @@ public class InputPorsiActivity extends AppCompatActivity {
         adapterProtein1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerProtein1.setAdapter(adapterProtein1);
 
-        adapterProtein2 = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, listProtein); // Protein 2 pakai list yg sama
+        adapterProtein2 = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, listProtein);
         adapterProtein2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerProtein2.setAdapter(adapterProtein2);
 
@@ -124,10 +120,9 @@ public class InputPorsiActivity extends AppCompatActivity {
                     try {
                         if (response.getString("status").equals("success")) {
                             JSONObject options = response.getJSONObject("options");
-                            // Panggil fungsi populate untuk setiap kategori
                             populateSpinnerList(options.getJSONArray("KH"), listKh, adapterKh, "- Pilih KH -");
                             populateSpinnerList(options.getJSONArray("Protein"), listProtein, adapterProtein1, "- Pilih Protein 1 -");
-                            populateSpinnerList(options.getJSONArray("Protein"), listProtein, adapterProtein2, "- Pilih Protein 2 (Opsional) -"); // Panggil lagi untuk Protein 2
+                            populateSpinnerList(options.getJSONArray("Protein"), listProtein, adapterProtein2, "- Pilih Protein 2 (Opsional) -");
                             populateSpinnerList(options.getJSONArray("Sayur"), listSayur, adapterSayur, "- Pilih Sayur -");
                             populateSpinnerList(options.getJSONArray("Buah"), listBuah, adapterBuah, "- Pilih Buah (Opsional) -");
                         } else {
@@ -142,10 +137,10 @@ public class InputPorsiActivity extends AppCompatActivity {
         requestQueue.add(request);
     }
 
-    // Helper untuk mengisi list dan update adapter spinner
+
     private void populateSpinnerList(JSONArray itemsJson, List<BahanMakanan> itemList, ArrayAdapter<BahanMakanan> adapter, String placeholder) {
         itemList.clear();
-        itemList.add(new BahanMakanan("", placeholder)); // Tambahkan placeholder di awal
+        itemList.add(new BahanMakanan("", placeholder));
         try {
             for (int i = 0; i < itemsJson.length(); i++) {
                 JSONObject item = itemsJson.getJSONObject(i);
@@ -154,7 +149,7 @@ public class InputPorsiActivity extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        adapter.notifyDataSetChanged(); // Beritahu adapter bahwa data berubah
+        adapter.notifyDataSetChanged();
     }
 
 
@@ -162,14 +157,12 @@ public class InputPorsiActivity extends AppCompatActivity {
         String jumlah = editTextJumlahPorsi.getText().toString().trim();
         String tambahan = editTextTambahan.getText().toString().trim();
 
-        // Ambil item terpilih dari spinner
         BahanMakanan selectedKh = (BahanMakanan) spinnerKh.getSelectedItem();
         BahanMakanan selectedP1 = (BahanMakanan) spinnerProtein1.getSelectedItem();
         BahanMakanan selectedP2 = (BahanMakanan) spinnerProtein2.getSelectedItem();
         BahanMakanan selectedSayur = (BahanMakanan) spinnerSayur.getSelectedItem();
         BahanMakanan selectedBuah = (BahanMakanan) spinnerBuah.getSelectedItem();
 
-        // Validasi Wajib
         if (selectedDate.isEmpty()) {
             Toast.makeText(this, "Tanggal wajib dipilih!", Toast.LENGTH_SHORT).show();
             return;
@@ -190,7 +183,7 @@ public class InputPorsiActivity extends AppCompatActivity {
             Toast.makeText(this, "Jumlah Porsi wajib diisi!", Toast.LENGTH_SHORT).show();
             return;
         }
-        try { // Cek apakah jumlah valid
+        try {
             if (Integer.parseInt(jumlah) <= 0) {
                 Toast.makeText(this, "Jumlah Porsi harus lebih dari 0!", Toast.LENGTH_SHORT).show();
                 return;
@@ -200,19 +193,18 @@ public class InputPorsiActivity extends AppCompatActivity {
             return;
         }
 
-        // Ambil ID (bisa kosong jika placeholder dipilih untuk opsional)
         String idKh = selectedKh.getId();
         String idP1 = selectedP1.getId();
-        String idP2 = (selectedP2 != null && !selectedP2.getId().isEmpty()) ? selectedP2.getId() : ""; // Kirim string kosong jika opsional tidak dipilih
+        String idP2 = (selectedP2 != null && !selectedP2.getId().isEmpty()) ? selectedP2.getId() : "";
         String idSayur = selectedSayur.getId();
-        String idBuah = (selectedBuah != null && !selectedBuah.getId().isEmpty()) ? selectedBuah.getId() : ""; // Kirim string kosong jika opsional tidak dipilih
+        String idBuah = (selectedBuah != null && !selectedBuah.getId().isEmpty()) ? selectedBuah.getId() : "";
 
         Toast.makeText(this, "Menyimpan data...", Toast.LENGTH_SHORT).show();
-        btnSimpanPorsi.setEnabled(false); // Nonaktifkan tombol saat proses
+        btnSimpanPorsi.setEnabled(false);
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, api_save_menu_stok,
                 response -> {
-                    btnSimpanPorsi.setEnabled(true); // Aktifkan lagi tombol
+                    btnSimpanPorsi.setEnabled(true);
                     try {
                         JSONObject jsonObject = new JSONObject(response);
                         String status = jsonObject.getString("status");
@@ -221,7 +213,7 @@ public class InputPorsiActivity extends AppCompatActivity {
                         Toast.makeText(InputPorsiActivity.this, message, Toast.LENGTH_LONG).show();
 
                         if (status.equals("success")) {
-                            // Reset form jika berhasil
+
                             textTanggalPorsi.setText("Pilih tanggal...");
                             textTanggalPorsi.setTextColor(getResources().getColor(android.R.color.darker_gray));
                             selectedDate = "";
@@ -238,13 +230,13 @@ public class InputPorsiActivity extends AppCompatActivity {
                     }
                 },
                 error -> {
-                    btnSimpanPorsi.setEnabled(true); // Aktifkan lagi tombol
+                    btnSimpanPorsi.setEnabled(true);
                     Toast.makeText(InputPorsiActivity.this, "Gagal menghubungi server: " + error.toString(), Toast.LENGTH_LONG).show();
                 }) {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<>();
-                // Nama key harus sama persis dengan yang dibaca $_POST di API PHP
+
                 params.put("tanggal_stok", selectedDate);
                 params.put("menu_kh", idKh);
                 params.put("menu_protein1", idP1);

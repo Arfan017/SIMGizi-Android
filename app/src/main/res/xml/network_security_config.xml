@@ -4,7 +4,7 @@
         <!--        <domain includeSubdomains="true">192.168.3.133</domain>-->
         <!--        <domain includeSubdomains="true">192.168.5.209</domain> &lt;!&ndash;server&ndash;&gt;-->
         <domain includeSubdomains="true">simgizi.online</domain>
-        <domain includeSubdomains="true">192.168.1.11</domain>
+<!--        <domain includeSubdomains="true">192.168.1.11</domain>-->
 
     </domain-config>
 </network-security-config>

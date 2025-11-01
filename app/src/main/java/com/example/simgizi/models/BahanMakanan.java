@@ -18,7 +18,6 @@ public class BahanMakanan {
         return nama;
     }
 
-    // PENTING: Agar ArrayAdapter menampilkan nama di Spinner
     @Override
     public String toString() {
         return nama;

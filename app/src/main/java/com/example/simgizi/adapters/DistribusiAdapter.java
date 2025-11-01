@@ -25,28 +25,18 @@ public class DistribusiAdapter extends RecyclerView.Adapter<DistribusiAdapter.Vi
     private List<Distribusi> distribusiList;
     private OnItemClickListener listener;
 
-    /**
-     * Interface untuk menangani klik pada item di RecyclerView.
-     */
     public interface OnItemClickListener {
         void onStatusButtonClick(Distribusi item, String newStatus);
         void onItemViewClick(Distribusi item);
     }
 
-    /**
-     * Constructor untuk adapter.
-     * @param context Konteks dari Activity yang memanggil.
-     * @param distribusiList Daftar data yang akan ditampilkan.
-     */
+
     public DistribusiAdapter(Context context, List<Distribusi> distribusiList) {
         this.context = context;
         this.distribusiList = distribusiList;
     }
 
-    /**
-     * Method untuk mendaftarkan listener dari Activity.
-     * @param listener Activity yang mengimplementasikan OnItemClickListener.
-     */
+
     public void setOnItemClickListener(OnItemClickListener listener) {
         this.listener = listener;
     }
@@ -54,28 +44,24 @@ public class DistribusiAdapter extends RecyclerView.Adapter<DistribusiAdapter.Vi
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // Membuat view baru dari layout list_item_distribusi.xml
         View view = LayoutInflater.from(context).inflate(R.layout.list_item_distribusi, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        // Mengambil data pada posisi tertentu
         Distribusi distribusi = distribusiList.get(position);
 
-        // Mengisi data ke dalam komponen UI di ViewHolder
         holder.textSekolah.setText(distribusi.getSekolah_tujuan());
         holder.textTanggal.setText("Tanggal: " + distribusi.getTanggal());
         holder.textJumlah.setText("Jumlah: " + distribusi.getJumlah() + " Porsi");
 
-        // --- Logika untuk Status dan Tombol ---
         String statusPengiriman = distribusi.getStatus_pengiriman();
         String statusText;
         int statusColor;
 
         switch (statusPengiriman) {
-            case "0": // Belum Dikirim
+            case "0":
                 statusText = "Belum Dikirim";
                 statusColor = context.getResources().getColor(android.R.color.holo_orange_dark);
                 holder.btnUbahStatus.setVisibility(View.VISIBLE);
@@ -84,7 +70,7 @@ public class DistribusiAdapter extends RecyclerView.Adapter<DistribusiAdapter.Vi
                     if (listener != null) listener.onStatusButtonClick(distribusi, "1");
                 });
                 break;
-            case "1": // Dalam Perjalanan
+            case "1":
                 statusText = "Dalam Perjalanan";
                 statusColor = context.getResources().getColor(android.R.color.holo_blue_dark);
                 holder.btnUbahStatus.setVisibility(View.VISIBLE);
@@ -93,10 +79,10 @@ public class DistribusiAdapter extends RecyclerView.Adapter<DistribusiAdapter.Vi
                     if (listener != null) listener.onStatusButtonClick(distribusi, "2");
                 });
                 break;
-            case "2": // Diterima
+            case "2":
                 statusText = "Diterima";
                 statusColor = context.getResources().getColor(android.R.color.holo_green_dark);
-                holder.btnUbahStatus.setVisibility(View.GONE); // Sembunyikan tombol jika sudah selesai
+                holder.btnUbahStatus.setVisibility(View.GONE);
                 break;
             default:
                 statusText = "Tidak Diketahui";
@@ -107,21 +93,18 @@ public class DistribusiAdapter extends RecyclerView.Adapter<DistribusiAdapter.Vi
         holder.textStatus.setText(statusText);
         holder.textStatus.setBackgroundColor(statusColor);
 
-        // --- Memuat Gambar menggunakan Glide ---
         String foto = distribusi.getFoto();
         if (foto != null && !foto.isEmpty() && !foto.equalsIgnoreCase("null")) {
             String imageUrl = base_url_image + foto;
             Glide.with(context)
                     .load(imageUrl)
-                    .placeholder(R.drawable.ic_input_porsi) // Gambar default saat loading
-                    .error(R.drawable.ic_riwayat)         // Gambar default jika terjadi error
+                    .placeholder(R.drawable.ic_input_porsi)
+                    .error(R.drawable.ic_riwayat)
                     .into(holder.imageDistribusi);
         } else {
-            // Jika tidak ada URL foto, tampilkan gambar default
             holder.imageDistribusi.setImageResource(R.drawable.ic_input_distribusi);
         }
 
-        // Menangani klik pada seluruh area kartu untuk membuka detail
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) {
                 listener.onItemViewClick(distribusi);
@@ -134,9 +117,6 @@ public class DistribusiAdapter extends RecyclerView.Adapter<DistribusiAdapter.Vi
         return distribusiList.size();
     }
 
-    /**
-     * ViewHolder untuk menyimpan referensi ke komponen UI di setiap item.
-     */
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView textSekolah, textTanggal, textJumlah, textStatus;
         Button btnUbahStatus;

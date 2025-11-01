@@ -40,7 +40,6 @@ public class SessionManager {
         editor.clear();
         editor.commit();
 
-        // Arahkan kembali ke LoginActivity setelah logout
         Intent i = new Intent(context, LoginActivity.class);
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

@@ -22,10 +22,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.example.simgizi" />
+                  <option name="mobileSdkAppId" value="1:837440855057:android:db0aff560e805ebaa725b0" />
+                  <option name="projectId" value="simgizi-tracking" />
+                  <option name="projectNumber" value="837440855057" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

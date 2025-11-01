@@ -78,7 +78,7 @@ public class EvaluasiActivity extends AppCompatActivity {
                                     evaluasiList.add(new Evaluasi(
                                             evalJson.getString("nama_sekolah"),
                                             evalJson.getString("tanggal"),
-                                            evalJson.getString("status_distribusi"), // Kirim angka sebagai string
+                                            evalJson.getString("status_distribusi"),
                                             evalJson.getString("catatan"),
                                             evalJson.getString("gambar")
                                     ));

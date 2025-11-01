@@ -46,17 +46,14 @@ public class DashboardActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Method ini dipanggil untuk membuat menu di ActionBar
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.dashboard_menu, menu); // Menghubungkan file XML menu kita
+        inflater.inflate(R.menu.dashboard_menu, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        // Method ini dipanggil saat item menu di-klik
         if (item.getItemId() == R.id.action_profile) {
-            // Jika item yang di-klik adalah profil
             Intent intent = new Intent(DashboardActivity.this, ProfileActivity.class);
             startActivity(intent);
             return true;

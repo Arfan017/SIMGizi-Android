@@ -24,7 +24,6 @@ public class Sekolah {
         return lokasi_gps;
     }
 
-    // PENTING: Method ini akan dipanggil oleh ArrayAdapter untuk menampilkan nama di Spinner
     @Override
     public String toString() {
         return nama_sekolah;

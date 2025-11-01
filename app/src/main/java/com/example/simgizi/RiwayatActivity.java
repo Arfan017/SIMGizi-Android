@@ -43,7 +43,6 @@ import java.util.Map;
 
 public class RiwayatActivity extends AppCompatActivity {
 
-    // Komponen UI Daftar
     private RecyclerView recyclerView;
     private RiwayatAdapter adapter;
     private List<Distribusi> riwayatList;
@@ -52,12 +51,10 @@ public class RiwayatActivity extends AppCompatActivity {
     private CardView cardFilter;
     private FloatingActionButton fabFilter;
 
-    // Komponen UI Filter
     private Button btnTanggalMulai, btnTanggalAkhir, btnTerapkanFilter, btnClearFilter;
     private Spinner spinnerFilterSekolah;
     private List<Sekolah> dataSekolahList = new ArrayList<>();
 
-    // Variabel untuk menyimpan nilai filter
     private String filterTanggalMulai = "";
     private String filterTanggalAkhir = "";
     private String filterIdSekolah = "";
@@ -89,7 +86,6 @@ public class RiwayatActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBarRiwayat);
         textDataKosong = findViewById(R.id.textDataKosong);
 
-//         Bind UI Filter
         btnTanggalMulai = findViewById(R.id.btnTanggalMulai);
         btnTanggalAkhir = findViewById(R.id.btnTanggalAkhir);
         btnTerapkanFilter = findViewById(R.id.btnTerapkanFilter);
@@ -106,7 +102,6 @@ public class RiwayatActivity extends AppCompatActivity {
                 response -> {
                     try {
                         dataSekolahList.clear();
-                        // Tambahkan item "Semua Sekolah" di posisi pertama
                         dataSekolahList.add(new Sekolah("", "Semua Sekolah", ""));
 
                         for (int i = 0; i < response.length(); i++) {
@@ -131,16 +126,13 @@ public class RiwayatActivity extends AppCompatActivity {
     private void setupFabListener() {
         fabFilter.setOnClickListener(v -> {
             if (cardFilter.getVisibility() == View.GONE) {
-                // Jika filter tersembunyi, tampilkan dengan animasi
                 Animation slideDown = AnimationUtils.loadAnimation(this, R.anim.slide_down);
                 cardFilter.setVisibility(View.VISIBLE);
                 cardFilter.startAnimation(slideDown);
             } else {
-                // Jika filter terlihat, sembunyikan dengan animasi
                 Animation slideUp = AnimationUtils.loadAnimation(this, R.anim.slide_up);
                 cardFilter.startAnimation(slideUp);
 
-                // Atur visibility ke GONE setelah animasi selesai
                 slideUp.setAnimationListener(new Animation.AnimationListener() {
                     @Override
                     public void onAnimationStart(Animation animation) {
@@ -160,13 +152,10 @@ public class RiwayatActivity extends AppCompatActivity {
     }
 
     private void setupFilterListeners() {
-        // Listener untuk tombol tanggal mulai
         btnTanggalMulai.setOnClickListener(v -> showDatePicker(true));
 
-        // Listener untuk tombol tanggal akhir
         btnTanggalAkhir.setOnClickListener(v -> showDatePicker(false));
 
-        // Listener untuk tombol terapkan filter
         btnTerapkanFilter.setOnClickListener(v -> {
             Sekolah sekolahTerpilih = (Sekolah) spinnerFilterSekolah.getSelectedItem();
             if (sekolahTerpilih != null) {
@@ -175,14 +164,13 @@ public class RiwayatActivity extends AppCompatActivity {
             fetchRiwayatData(filterTanggalMulai, filterTanggalAkhir, filterIdSekolah);
         });
 
-        // Listener untuk tombol reset filter
         btnClearFilter.setOnClickListener(v -> {
             filterTanggalMulai = "";
             filterTanggalAkhir = "";
             filterIdSekolah = "";
             btnTanggalMulai.setText("Dari Tanggal");
             btnTanggalAkhir.setText("Sampai Tanggal");
-            spinnerFilterSekolah.setSelection(0); // Kembali ke "Semua Sekolah"
+            spinnerFilterSekolah.setSelection(0);
             fetchRiwayatData(filterTanggalMulai, filterTanggalAkhir, filterIdSekolah);
         });
     }
@@ -206,11 +194,10 @@ public class RiwayatActivity extends AppCompatActivity {
     private void fetchRiwayatData(String tglMulai, String tglAkhir, String idSekolah) {
         progressBar.setVisibility(View.VISIBLE);
         textDataKosong.setVisibility(View.GONE);
-        riwayatList.clear(); // Kosongkan list sebelum request baru
+        riwayatList.clear();
         adapter.notifyDataSetChanged();
 
         RequestQueue queue = Volley.newRequestQueue(this);
-        // Menggunakan StringRequest karena kita mengirim parameter via POST
         StringRequest stringRequest = new StringRequest(Request.Method.POST, api_filter,
                 response -> {
                     progressBar.setVisibility(View.GONE);
@@ -247,7 +234,6 @@ public class RiwayatActivity extends AppCompatActivity {
                 }) {
             @Override
             protected Map<String, String> getParams() {
-                // Parameter yang akan dikirim ke file filter_riwayat.php
                 Map<String, String> params = new HashMap<>();
                 params.put("tanggal_mulai", tglMulai);
                 params.put("tanggal_akhir", tglAkhir);
@@ -257,42 +243,4 @@ public class RiwayatActivity extends AppCompatActivity {
         };
         queue.add(stringRequest);
     }
-
-//    private void fetchRiwayatData() {
-//        progressBar.setVisibility(View.VISIBLE);
-//        RequestQueue queue = Volley.newRequestQueue(this);
-//
-//        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, api_get_riwayat, null,
-//                response -> {
-//                    progressBar.setVisibility(View.GONE);
-//                    try {
-//                        riwayatList.clear();
-//                        for (int i = 0; i < response.length(); i++) {
-//                            JSONObject jsonObject = response.getJSONObject(i);
-//                            Distribusi distribusi = new Distribusi(
-//                                    jsonObject.getString("id_distribusi"),
-//                                    jsonObject.getString("tanggal"),
-//                                    jsonObject.getString("jam"),
-//                                    jsonObject.getString("jumlah"),
-//                                    jsonObject.getString("status_pengiriman"),
-//                                    jsonObject.getString("nama_petugas"),
-//                                    jsonObject.getString("sekolah_tujuan"),
-//                                    jsonObject.getString("lokasi_gps"),
-//                                    jsonObject.getString("foto")
-//                            );
-//                            riwayatList.add(distribusi);
-//                        }
-//                        adapter.notifyDataSetChanged();
-//                    } catch (JSONException e) {
-//                        e.printStackTrace();
-//                        Toast.makeText(RiwayatActivity.this, "Error parsing data!", Toast.LENGTH_SHORT).show();
-//                    }
-//                },
-//                error -> {
-//                    progressBar.setVisibility(View.GONE);
-//                    Toast.makeText(RiwayatActivity.this, "Gagal mengambil data riwayat", Toast.LENGTH_SHORT).show();
-//                });
-//
-//        queue.add(jsonArrayRequest);
-//    }
 }

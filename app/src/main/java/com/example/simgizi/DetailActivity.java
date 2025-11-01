@@ -49,29 +49,24 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void populateData(Distribusi distribusi) {
-        // Set judul halaman
         setTitle("Detail Distribusi");
 
-        // --- Memuat gambar menggunakan Glide ---
         if (distribusi.getFoto() != null && !distribusi.getFoto().isEmpty() && !distribusi.getFoto().equalsIgnoreCase("null")) {
             String imageUrl = base_url_image + distribusi.getFoto();
             Glide.with(this)
                     .load(imageUrl)
-                    .placeholder(R.drawable.ic_input_distribusi) // Gambar default saat loading/jika foto tidak ada
-                    .error(R.drawable.ic_input_distribusi) // Gambar default jika terjadi error
+                    .placeholder(R.drawable.ic_input_distribusi)
+                    .error(R.drawable.ic_input_distribusi)
                     .into(imageDetailFoto);
         } else {
-            // Jika tidak ada foto, tampilkan placeholder default
             imageDetailFoto.setImageResource(R.drawable.ic_input_distribusi);
         }
 
-        // Isi semua TextView dengan data dari objek
         textDetailSekolah.setText(distribusi.getSekolah_tujuan());
         textDetailPetugas.setText(distribusi.getNama_petugas());
-        textDetailWaktu.setText(distribusi.getTanggal() + " " + distribusi.getWaktu()); // Gabungkan tanggal dan jam
+        textDetailWaktu.setText(distribusi.getTanggal() + " " + distribusi.getWaktu());
         textDetailJumlah.setText(distribusi.getJumlah() + " Porsi");
 
-        // Logika untuk menampilkan status dan warna
         String statusText;
         int statusColor;
         switch (distribusi.getStatus_pengiriman()) {
@@ -95,16 +90,13 @@ public class DetailActivity extends AppCompatActivity {
         textDetailStatus.setText(statusText);
         textDetailStatus.setBackgroundColor(statusColor);
 
-        // Listener untuk tombol lihat lokasi
         btnLihatLokasi.setOnClickListener(v -> {
             String gps = distribusi.getLokasi_gps();
             if (gps != null && !gps.isEmpty() && !gps.equals("0,0")) {
-                // Buat Intent untuk membuka Google Maps
                 Uri gmmIntentUri = Uri.parse("geo:" + gps + "?q=" + gps + "(" + Uri.encode(distribusi.getSekolah_tujuan()) + ")");
                 Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
                 mapIntent.setPackage("com.google.android.apps.maps");
 
-                // Cek apakah Google Maps terinstall
                 if (mapIntent.resolveActivity(getPackageManager()) != null) {
                     startActivity(mapIntent);
                 } else {
